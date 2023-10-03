@@ -1,10 +1,7 @@
 package blog
 
 import (
-	"log"
 	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Blog struct {
@@ -25,25 +22,4 @@ type Blog struct {
 	SEOTitle          string    `yaml:"SEOTitle,omitempty"`
 	SEODescription    string    `yaml:"SEODescription,omitempty"`
 	SEOKeywords       []string  `yaml:"SEOKeywords,omitempty"`
-}
-
-func (blog Blog) ToYAML() []byte {
-	result, err := yaml.Marshal(&blog)
-
-	if err != nil {
-		log.Fatal("Error turning Blog model into YAML")
-	}
-
-	return result
-}
-
-func FromYAML(data []byte) Blog {
-	blog := Blog{}
-
-	err := yaml.Unmarshal(data, &blog)
-	if err != nil {
-		log.Fatal("Error reading Blog model from YAML. Check file format")
-	}
-
-	return blog
 }

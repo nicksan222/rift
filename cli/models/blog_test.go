@@ -2,6 +2,7 @@ package blog
 
 import (
 	"reflect"
+	yaml "rift/utils"
 	"testing"
 	"time"
 )
@@ -27,11 +28,12 @@ func TestToYAML(t *testing.T) {
 		SEOKeywords:       []string{"keyword1", "keyword2"},
 	}
 
-	yamlData := blog.ToYAML()
-	newBlog := FromYAML(yamlData)
+	model := yaml.Model[Blog]{Value: blog}
+	yamlData := model.ToYAML()
+	newBlog := yaml.FromYAML[Blog](yamlData)
 
 	// Check if both blogs are the same
-	if !reflect.DeepEqual(blog, newBlog) {
+	if !reflect.DeepEqual(blog, newBlog.Value) {
 		t.Log(blog)
 		t.Log(newBlog)
 		t.Error("The converted Blog struct does not match the original.")
@@ -66,10 +68,10 @@ SEOKeywords:
 - keyword1
 - keyword2
 `)
-	blog := FromYAML(yamlData)
+	blog := yaml.FromYAML[Blog](yamlData)
 
-	if blog.Title != "Test Title" {
-		t.Errorf("Expected Title to be 'Test Title', but got %s", blog.Title)
+	if blog.Value.Title != "Test Title" {
+		t.Errorf("Expected Title to be 'Test Title', but got %s", blog.Value.Title)
 	}
 
 	// ... Continue for other fields ...
