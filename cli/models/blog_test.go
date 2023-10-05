@@ -1,10 +1,11 @@
 package blog
 
 import (
-	"reflect"
 	yaml "rift/utils"
 	"testing"
 	"time"
+
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestToYAML(t *testing.T) {
@@ -28,16 +29,20 @@ func TestToYAML(t *testing.T) {
 		SEOKeywords:       []string{"keyword1", "keyword2"},
 	}
 
-	model := yaml.Model[Blog]{Value: blog}
-	yamlData := model.ToYAML()
-	newBlog := yaml.FromYAML[Blog](yamlData)
+	yamlData := yaml.ToYAML(blog)
+	var newBlog Blog
+	err := yaml.FromYAML(yamlData, &newBlog)
+
+	if err != nil {
+		t.Error(err)
+	}
 
 	// Check if both blogs are the same
-	if !reflect.DeepEqual(blog, newBlog.Value) {
-		t.Log(blog)
-		t.Log(newBlog)
+	if !(pretty.Compare(blog, newBlog) == "") {
+		t.Logf("Differences: %+v", pretty.Compare(blog, newBlog)) // Use the github.com/kylelemons/godebug/pretty package
 		t.Error("The converted Blog struct does not match the original.")
 	}
+
 }
 
 func TestFromYAML(t *testing.T) {
@@ -68,10 +73,16 @@ SEOKeywords:
 - keyword1
 - keyword2
 `)
-	blog := yaml.FromYAML[Blog](yamlData)
+	var blog Blog
 
-	if blog.Value.Title != "Test Title" {
-		t.Errorf("Expected Title to be 'Test Title', but got %s", blog.Value.Title)
+	err := yaml.FromYAML(yamlData, &blog)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if blog.Title != "Test Title" {
+		t.Errorf("Expected Title to be 'Test Title', but got %s", blog.Title)
 	}
 
 	// ... Continue for other fields ...

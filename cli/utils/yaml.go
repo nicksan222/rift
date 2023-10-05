@@ -6,27 +6,22 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Model[T any] struct {
-	Value T
-}
-
-func (m *Model[T]) ToYAML() []byte {
-	result, err := yaml.Marshal(&m.Value)
+func ToYAML[T any](value T) []byte {
+	result, err := yaml.Marshal(&value)
 
 	if err != nil {
-		log.Fatalf("Error turning model of type %T into YAML: %v", m.Value, err)
+		log.Fatalf("Error turning value of type %T into YAML: %v", value, err)
 	}
 
 	return result
 }
 
-func FromYAML[T any](data []byte) Model[T] {
-	model := Model[T]{}
-
-	err := yaml.Unmarshal(data, &model.Value)
+func FromYAML[T any](data []byte, value T) error {
+	err := yaml.Unmarshal(data, &value)
 	if err != nil {
-		log.Fatalf("Error reading model of type %T from YAML. Check file format: %v", model.Value, err)
+		log.Fatalf("Error reading value of type %T from YAML. Check file format: %v", value, err)
+		return err
 	}
 
-	return model
+	return nil
 }
