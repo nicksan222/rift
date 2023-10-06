@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 type Tag struct {
@@ -41,8 +43,19 @@ func CreateTag(name string) (Tag, error) {
 }
 
 func GetTags() (map[string]Tag, error) {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, fmt.Errorf("failed to get current file location")
+	}
+
+	// Getting the directory of the current file
+	dir := filepath.Dir(filename)
+
+	// Constructing the path to tags.json
+	jsonPath := filepath.Join(dir, "tags.json")
+
 	// Reading tags from local file
-	file, err := os.ReadFile("./tags.json")
+	file, err := os.ReadFile(jsonPath)
 
 	fmt.Println(file)
 
